@@ -1,6 +1,6 @@
 [versions]
 agp = "8.8.0"
-kotlin = "2.1.0"
+kotlin = "2.1.10"
 coreKtx = "1.15.0"
 junit = "4.13.2"
 junitVersion = "1.2.1"
@@ -8,6 +8,20 @@ espressoCore = "3.6.1"
 lifecycleRuntimeKtx = "2.8.7"
 activityCompose = "1.10.0"
 composeBom = "2025.02.00"
+
+
+coilComposeVersion = "3.1.0"
+mIconsVersion = "1.7.8"
+kotlinxSerializationJsonVersion = "1.8.0"
+kotlinxSerializationConverterVersion = "1.0.0"
+retrofitVersion = "2.11.0"
+devtoolsKspVersion = "2.1.0-1.0.29"
+hiltVersion = "2.55"
+hiltNavigationComposeVersion = "1.2.0"
+navComposeVersion = "2.8.7"
+roomVersion = "2.6.1"
+datastoreVersion = "1.1.2"
+securityCryptoVersion = "1.1.0-alpha06"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -25,8 +39,48 @@ androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-man
 androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
 
+androidx-compose-ui-fonts = { group = "androidx.compose.ui", name = "ui-text-google-fonts" }
+
+androidx-material-icons-extended = { module = "androidx.compose.material:material-icons-extended", version.ref = "mIconsVersion" }
+
+#Coil
+coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coilComposeVersion" }
+
+#Kotlin Serialization
+kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationJsonVersion" }
+retrofit-kotlinx-serialization-converter = { module = "com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter", version.ref = "kotlinxSerializationConverterVersion" }
+
+# Retrofit
+retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofitVersion" }
+
+# Hilt
+hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hiltVersion" }
+hilt-android-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "hiltVersion" }
+hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hiltNavigationComposeVersion" }
+
+#Navigation
+androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navComposeVersion" }
+
+#Room
+androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "roomVersion" }
+androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "roomVersion" }
+androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "roomVersion" }
+
+#DataStore
+androidx-datastore = { module = "androidx.datastore:datastore", version.ref = "datastoreVersion" }
+androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastoreVersion" }
+
+#Security
+androidx-security-crypto = { module = "androidx.security:security-crypto", version.ref = "securityCryptoVersion" }
+
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+
+kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+
+devtools-ksp = { id = "com.google.devtools.ksp", version.ref = "devtoolsKspVersion" }
+
+hilt = { id = "com.google.dagger.hilt.android", version.ref = "hiltVersion" }
 
