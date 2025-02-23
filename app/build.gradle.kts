@@ -8,6 +8,8 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.hilt)
     alias(libs.plugins.devtools.ksp)
+
+    alias(libs.plugins.room)
 }
 
 android {
@@ -70,7 +72,13 @@ android {
         compose = true
 
         buildConfig = true
+
     }
+
+    room {
+        schemaDirectory("$projectDir/schemas")
+    }
+
 }
 
 dependencies {
@@ -88,11 +96,13 @@ dependencies {
     implementation(libs.androidx.material.icons.extended)
 
     implementation(libs.coil.compose)
+    implementation(libs.coil.network.okhttp)
 
     implementation(libs.kotlinx.serialization.json)
 
     implementation(libs.retrofit)
     implementation(libs.retrofit.kotlinx.serialization.converter)
+    implementation(libs.okhttp)
 
     implementation(libs.hilt.android)
     ksp(libs.hilt.android.compiler)
@@ -103,6 +113,7 @@ dependencies {
     implementation(libs.androidx.room.runtime)
     ksp(libs.androidx.room.compiler)
     implementation(libs.androidx.room.ktx)
+    implementation(libs.androidx.room.paging)
 
     implementation(libs.androidx.datastore.preferences)
     implementation(libs.androidx.datastore)
