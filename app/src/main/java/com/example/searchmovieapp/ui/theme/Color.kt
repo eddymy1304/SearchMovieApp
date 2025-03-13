@@ -1,5 +1,9 @@
 package com.example.searchmovieapp.ui.theme
 
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.TextFieldColors
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
 val Purple80 = Color(0xFFD0BCFF)
@@ -226,3 +230,27 @@ val surfaceContainerLowDarkHighContrast = Color(0xFF1E1F25)
 val surfaceContainerDarkHighContrast = Color(0xFF2F3036)
 val surfaceContainerHighDarkHighContrast = Color(0xFF3A3B41)
 val surfaceContainerHighestDarkHighContrast = Color(0xFF46464C)
+
+@Composable
+fun getColorOutlinedTextFieldColors(): TextFieldColors {
+    return OutlinedTextFieldDefaults.colors(
+        focusedBorderColor = MaterialTheme.colorScheme.surface,
+        unfocusedBorderColor = MaterialTheme.colorScheme.onSurface,
+        focusedTextColor = MaterialTheme.colorScheme.surface,
+        unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+        cursorColor = MaterialTheme.colorScheme.surface,
+        focusedPlaceholderColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.5f),
+        unfocusedPlaceholderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
+        focusedLeadingIconColor = MaterialTheme.colorScheme.surface,
+        unfocusedLeadingIconColor = MaterialTheme.colorScheme.onSurface,
+        focusedTrailingIconColor = MaterialTheme.colorScheme.surface,
+        unfocusedTrailingIconColor = MaterialTheme.colorScheme.onSurface
+    )
+}
+
+@Composable
+fun brushBackground() = listOf(
+    MaterialTheme.colorScheme.primary,
+    MaterialTheme.colorScheme.secondary,
+    MaterialTheme.colorScheme.tertiary
+)

@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Close
@@ -20,19 +19,17 @@ import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material.icons.outlined.StarOutline
 import androidx.compose.material3.Card
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.snapshotFlow
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -48,10 +45,13 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil3.compose.AsyncImage
 import com.example.searchmovieapp.R
+import com.example.searchmovieapp.ui.components.CustomProgress
 import com.example.searchmovieapp.ui.model.HomeUiState
 import com.example.searchmovieapp.ui.model.MovieModel
 import com.example.searchmovieapp.ui.model.TypeMovie
 import com.example.searchmovieapp.ui.theme.SearchMovieAppTheme
+import com.example.searchmovieapp.ui.theme.brushBackground
+import com.example.searchmovieapp.ui.theme.getColorOutlinedTextFieldColors
 
 @Composable
 fun HomeScreen(
@@ -87,7 +87,6 @@ fun HomeScreen(
     onQueryChanged: (String) -> Unit
 ) {
 
-    val listState = rememberLazyListState()
     val listState2 = rememberSaveable(saver = LazyListState.Saver) {
         LazyListState()
     }
@@ -97,11 +96,7 @@ fun HomeScreen(
             .fillMaxSize()
             .background(
                 brush = Brush.linearGradient(
-                    colors = listOf(
-                        MaterialTheme.colorScheme.primary,
-                        MaterialTheme.colorScheme.secondary,
-                        MaterialTheme.colorScheme.tertiary
-                    )
+                    colors = brushBackground()
                 )
             )
     ) {
@@ -120,75 +115,64 @@ fun HomeScreen(
             },
             leadingIcon = {
                 Icon(
-                    imageVector = Icons.Outlined.Search, contentDescription = null
+                    imageVector = Icons.Outlined.Search,
+                    contentDescription = null
                 )
             },
             trailingIcon = {
-                if (query.isNotEmpty()) {
+                query.ifBlank {
                     IconButton(onClick = { onQueryChanged("") }) {
                         Icon(
-                            imageVector = Icons.Outlined.Close, contentDescription = null
+                            imageVector = Icons.Outlined.Close,
+                            contentDescription = null
                         )
                     }
                 }
             },
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor = MaterialTheme.colorScheme.surface,
-                unfocusedBorderColor = MaterialTheme.colorScheme.onSurface,
-                focusedTextColor = MaterialTheme.colorScheme.surface,
-                unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
-                cursorColor = MaterialTheme.colorScheme.surface,
-                focusedPlaceholderColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.5f),
-                unfocusedPlaceholderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
-                focusedLeadingIconColor = MaterialTheme.colorScheme.surface,
-                unfocusedLeadingIconColor = MaterialTheme.colorScheme.onSurface,
-                focusedTrailingIconColor = MaterialTheme.colorScheme.surface,
-                unfocusedTrailingIconColor = MaterialTheme.colorScheme.onSurface
-            )
+            colors = getColorOutlinedTextFieldColors(),
         )
 
-        if (uiState is HomeUiState.Success) {
-            LazyColumn(
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                contentPadding = PaddingValues(8.dp),
-                state = listState2
-            ) {
-                itemsIndexed(items = uiState.movies, key = { _, item -> item.id }) { index, item ->
-                    if ((index + threadHold) >= uiState.movies.lastIndex) incrementPageIndex()
-                    CardMovie(
-                        modifier = Modifier.animateItem(fadeInSpec = null, fadeOutSpec = null),
-                        movie = item,
-                        onClickFavorite = { onClickFavoriteItem(item) }
-                    )
-                }
+        when (uiState) {
+            is HomeUiState.Error -> uiState.error?.let {
+                onSnackBar(it)
             }
 
-            LaunchedEffect(listState2) {
-                snapshotFlow { listState2.layoutInfo.visibleItemsInfo }.collect { visibleItems ->
+            is HomeUiState.Loading -> CustomProgress()
+
+            is HomeUiState.Success -> {
+
+                LazyColumn(
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    contentPadding = PaddingValues(8.dp),
+                    state = listState2
+                ) {
+                    itemsIndexed(
+                        items = uiState.movies,
+                        key = { _, item -> item.id }) { index, item ->
+                        if ((index + threadHold) >= uiState.movies.lastIndex) incrementPageIndex()
+                        CardMovie(
+                            modifier = Modifier.animateItem(fadeInSpec = null, fadeOutSpec = null),
+                            movie = item,
+                            onClickFavorite = { onClickFavoriteItem(item) }
+                        )
+                    }
+                }
+
+                LaunchedEffect(listState2) {
+                    snapshotFlow { listState2.layoutInfo.visibleItemsInfo }.collect { visibleItems ->
 
                         val lastItem = visibleItems.lastOrNull()
                         val totalItems = uiState.movies.size
 
-                        if (lastItem != null && lastItem.index == totalItems - 1) incrementPageIndex()
+                        lastItem?.let { if (it.index == totalItems - 1) incrementPageIndex() }
+
                     }
-            }
+                }
 
-        }
-
-        if (uiState is HomeUiState.Loading) {
-            Box(
-                modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
-            ) {
-                CircularProgressIndicator()
             }
         }
 
-        if (uiState is HomeUiState.Error) {
-            uiState.error?.let {
-                onSnackBar(it)
-            }
-        }
     }
 }
 
@@ -274,7 +258,8 @@ fun CardMoviePreview() {
 @Preview(showSystemUi = true)
 fun HomeScreenPreview() {
     SearchMovieAppTheme(darkTheme = true) {
-        HomeScreen(query = "",
+        HomeScreen(
+            query = "",
             uiState = HomeUiState.Success(),
             onClickFavoriteItem = {},
             incrementPageIndex = {},
